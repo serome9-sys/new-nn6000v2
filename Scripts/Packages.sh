@@ -128,3 +128,7 @@ UPDATE_VERSION "sing-box"
 if [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then
 	source "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh"
 fi
+# 强制添加 macvlan 虚拟网口驱动及 LuCI 控制面板
+echo "CONFIG_PACKAGE_luci-app-mwan3=y" >> .config
+echo "CONFIG_PACKAGE_luci-i18n-mwan3-zh-cn=y" >> .config
+echo "CONFIG_PACKAGE_kmod-macvlan=y" >> .config
