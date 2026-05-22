@@ -129,29 +129,27 @@ if [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then
 	source "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh"
 fi
 
-# ----------------- 25.12+ APK 模式 专属核心插件直打脚本 -----------------
-
-# 1. 基础多拨、负载均衡与并发驱动 (mwan3 + macvlan)
+# 1. 满血多拨、负载均衡与 macvlan 虚拟网卡驱动
 echo "CONFIG_PACKAGE_luci-app-mwan3=y" >> .config
 echo "CONFIG_PACKAGE_luci-i18n-mwan3-zh-cn=y" >> .config
 echo "CONFIG_PACKAGE_kmod-macvlan=y" >> .config
 
-# 2. IPTV 组播转发组件 (udpxy)
+# 2. IPTV 组播转发组件
 echo "CONFIG_PACKAGE_luci-app-udpxy=y" >> .config
 echo "CONFIG_PACKAGE_luci-i18n-udpxy-zh-cn=y" >> .config
 
-# 3. 阿里云动态域名组件 (aliddns)
+# 3. 阿里云动态域名组件
 echo "CONFIG_PACKAGE_luci-app-ddns=y" >> .config
 echo "CONFIG_PACKAGE_ddns-scripts-aliyun=y" >> .config
 
 # 4. 安全隐蔽隧道组件 (WireGuard)
 echo "CONFIG_PACKAGE_luci-app-wireguard=y" >> .config
 
-# 5. iStore 软件中心（新版 25.12+ 完美兼容底层）
+# 5. iStore 软件中心（24.10 成熟应用市场）
 echo "CONFIG_PACKAGE_luci-app-store=y" >> .config
 
-# 6. 网络安全代理组件（OpenClash 官方最新版深度集成）
-echo "CONFIG_PACKAGE_luci-app-openclash=y" >> .config
+
+
 
 # ------------------------------------------------------------------------
 
