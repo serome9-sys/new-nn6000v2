@@ -1,6 +1,4 @@
 #!/bin/bash
-# 强行将上游源码回滚切换至 24.10 稳定版分支
-git checkout openwrt-24.10
 # SPDX-License-Identifier: MIT
 # Copyright (C) 2026 VIKINGYFY
 
