@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # SPDX-License-Identifier: MIT
 # Copyright (C) 2026 VIKINGYFY
 
@@ -66,18 +66,31 @@ fi
 #高通平台调整
 DTS_PATH="./target/linux/qualcommax/dts/"
 if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
-	#取消nss相关feed
-	echo "CONFIG_FEED_nss_packages=n" >> ./.config
-	echo "CONFIG_FEED_sqm_scripts_nss=n" >> ./.config
-	#设置NSS版本
-	echo "CONFIG_NSS_FIRMWARE_VERSION_12_5=y" >> ./.config
-	#其他调整
-	echo "CONFIG_PACKAGE_kmod-usb-serial-qualcomm=y" >> ./.config
+	#NN6000V2专用：满血NSS驱动
+	if [[ "${WRT_CONFIG,,}" == *"nn6000v2"* ]]; then
+		echo "===== NN6000V2: 开启满血NSS驱动 ====="
+		echo "CONFIG_FEED_nss_packages=y" >> ./.config
+		echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y" >> ./.config
+		echo "CONFIG_PACKAGE_kmod-qca-nss-drv=y" >> ./.config
+		echo "CONFIG_PACKAGE_qca-nss-firmware=y" >> ./.config
+		echo "CONFIG_NSS_FIRMWARE_VERSION_12_5=y" >> ./.config
+		#NN6000V2专用：管理IP和主机名
+		sed -i "s/192\.168\.10\.1/192.168.123.1/g" $CFG_FILE
+		sed -i "s/hostname='OWRT'/hostname='ser0me'/g" $CFG_FILE
+		#NN6000V2专用：主题改为Argon
+		sed -i "s/luci-theme-aurora/luci-theme-argon/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
+		echo "WRT_WIFI=wifi-no" >> $GITHUB_ENV
+	else
+		#其他高通设备：取消nss相关feed
+		echo "CONFIG_FEED_nss_packages=n" >> ./.config
+		echo "CONFIG_FEED_sqm_scripts_nss=n" >> ./.config
+		#设置NSS版本
+		echo "CONFIG_NSS_FIRMWARE_VERSION_12_5=y" >> ./.config
+	fi
 
-	#无WIFI配置调整Q6大小
-	if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]]; then
+	#无WIFI配置：调整DTS使用nowifi（兼容NN6000V2和WIFI-NO）
+	if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]] || [[ "${WRT_CONFIG,,}" == *"nn6000v2"* ]]; then
 		find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\).dtsi/ipq\1-nowifi.dtsi/g' {} +
-		echo "qualcommax set up nowifi successfully!"
+		echo "qualcommax nowifi dts updated!"
 	fi
 fi
-
