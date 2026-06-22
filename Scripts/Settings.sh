@@ -60,9 +60,28 @@ fi
 #高通平台调整
 DTS_PATH="./target/linux/qualcommax/dts/"
 if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
-	#无WIFI配置调整Q6大小
-	if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]]; then
+	#NN6000V2专用：满血NSS驱动 + 专属配置
+	if [[ "${WRT_CONFIG,,}" == *"nn6000v2"* ]]; then
+		echo "===== NN6000V2: 开启满血NSS驱动 ====="
+		echo "CONFIG_FEED_nss_packages=y" >> ./.config
+		echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y" >> ./.config
+		echo "CONFIG_PACKAGE_kmod-qca-nss-drv=y" >> ./.config
+		echo "CONFIG_PACKAGE_qca-nss-firmware=y" >> ./.config
+		echo "CONFIG_NSS_FIRMWARE_VERSION_12_5=y" >> ./.config
+		#管理IP改成192.168.123.1，主机名ser0me
+		sed -i "s/192\.168\.10\.1/192.168.123.1/g" $CFG_FILE
+		sed -i "s/hostname='OWRT'/hostname='ser0me'/g" $CFG_FILE
+		#主题改为Argon
+		sed -i "s/luci-theme-aurora/luci-theme-argon/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
+		echo "WRT_WIFI=wifi-no" >> $GITHUB_ENV
+		#DTS nowifi调整
 		find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\).dtsi/ipq\1-nowifi.dtsi/g' {} +
 		echo "qualcommax set up nowifi successfully!"
+	else
+		#无WIFI配置调整Q6大小
+		if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]]; then
+			find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\).dtsi/ipq\1-nowifi.dtsi/g' {} +
+			echo "qualcommax set up nowifi successfully!"
+		fi
 	fi
 fi
