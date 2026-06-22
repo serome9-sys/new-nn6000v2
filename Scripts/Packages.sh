@@ -79,7 +79,8 @@ UPDATE_PACKAGE "quickfile" "sbwml/luci-app-quickfile" "main"
 UPDATE_PACKAGE "timecontrol" "sirpdboy/luci-app-timecontrol" "main"
 UPDATE_PACKAGE "viking" "VIKINGYFY/packages" "main" "" "gecoosac luci-app-timewol luci-app-wolplus"
 UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
-
+#NN6000V2专用：第三方满血mwan3（多拨负载均衡）
+UPDATE_PACKAGE "mwan3" "dl12345/mwan3" "main"
 #更新软件包版本
 UPDATE_VERSION() {
 	local PKG_NAME=$1
